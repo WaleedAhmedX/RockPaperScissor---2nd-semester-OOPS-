@@ -1,0 +1,176 @@
+package rockpaperscissor;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
+
+public class RockPaperScissorsGraphicsGUI extends JFrame {
+
+    // Enum for the game choices
+    public enum Choice {
+        ROCK, PAPER, SCISSORS;
+
+        // Get a random computer choice
+        public static Choice getRandomChoice() {
+            Random random = new Random();
+            return values()[random.nextInt(values().length)];
+        }
+
+        // Determine the winner of the game
+        public static String determineWinner(Choice userChoice, Choice computerChoice) {
+            if (userChoice == computerChoice) {
+                return "It's a tie!";
+            }
+
+            switch (userChoice) {
+                case ROCK:
+                    return (computerChoice == SCISSORS) ? "You win! Rock beats Scissors." : "Computer wins! Paper beats Rock.";
+                case PAPER:
+                    return (computerChoice == ROCK) ? "You win! Paper beats Rock." : "Computer wins! Scissors beats Paper.";
+                case SCISSORS:
+                    return (computerChoice == PAPER) ? "You win! Scissors beats Paper." : "Computer wins! Rock beats Scissors.";
+                default:
+                    return "Invalid choice.";
+            }
+        }
+    }
+
+    // GUI Components
+    private JLabel resultLabel;
+    private JLabel userChoiceLabel;
+    private JLabel computerChoiceLabel;
+    private JLabel scoreLabel;
+    private JButton rockButton, paperButton, scissorsButton, resetButton;
+    private JTextArea resultTextArea;
+
+    // Game variables
+    private int userScore;
+    private int computerScore;
+
+    public RockPaperScissorsGraphicsGUI() {
+        // Frame settings
+        setTitle("Rock, Paper, Scissors Game");
+        setSize(600, 500);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Initialize scores
+        userScore = 0;
+        computerScore = 0;
+
+        // Create labels
+        resultLabel = new JLabel("Choose Rock, Paper, or Scissors", JLabel.CENTER);
+        resultLabel.setFont(new Font("Arial", Font.BOLD, 16));
+
+        userChoiceLabel = new JLabel("Your choice: ", JLabel.CENTER);
+        computerChoiceLabel = new JLabel("Computer's choice: ", JLabel.CENTER);
+        scoreLabel = new JLabel("Score: You 0 - 0 Computer", JLabel.CENTER);
+
+        // Create the buttons
+        rockButton = new JButton("Rock");
+        paperButton = new JButton("Paper");
+        scissorsButton = new JButton("Scissors");
+        resetButton = new JButton("Reset");
+
+        // Add action listeners
+        rockButton.addActionListener(new ButtonClickListener());
+        paperButton.addActionListener(new ButtonClickListener());
+        scissorsButton.addActionListener(new ButtonClickListener());
+        resetButton.addActionListener(new ResetButtonListener());
+
+        // Create a panel for buttons
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new GridLayout(1, 4));
+        buttonPanel.add(rockButton);
+        buttonPanel.add(paperButton);
+        buttonPanel.add(scissorsButton);
+        buttonPanel.add(resetButton);
+
+        // Create a panel for the score and result
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new GridLayout(5, 1));
+        infoPanel.add(resultLabel);
+        infoPanel.add(userChoiceLabel);
+        infoPanel.add(computerChoiceLabel);
+        infoPanel.add(scoreLabel);
+
+        // Create a text area for the game result
+        resultTextArea = new JTextArea(5, 30);
+        resultTextArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(resultTextArea);
+
+        // Add components to the frame
+        add(infoPanel, BorderLayout.NORTH);
+        add(buttonPanel, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.EAST);
+    }
+
+    // Action listener for the game buttons
+    private class ButtonClickListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Get the user's choice based on the button clicked
+            Choice userChoice = null;
+
+            if (e.getSource() == rockButton) {
+                userChoice = Choice.ROCK;
+            } else if (e.getSource() == paperButton) {
+                userChoice = Choice.PAPER;
+            } else if (e.getSource() == scissorsButton) {
+                userChoice = Choice.SCISSORS;
+            }
+
+            // Get the computer's random choice
+            Choice computerChoice = Choice.getRandomChoice();
+
+            // Display choices
+            userChoiceLabel.setText("Your choice: " + userChoice);
+            computerChoiceLabel.setText("Computer's choice: " + computerChoice);
+
+            // Determine the winner and update scores
+            String result = Choice.determineWinner(userChoice, computerChoice);
+
+            if (result.contains("You win")) {
+                userScore++;
+            } else if (result.contains("Computer wins")) {
+                computerScore++;
+            }
+
+            // Update result and score
+            resultLabel.setText(result);
+            scoreLabel.setText("Score: You " + userScore + " - " + computerScore + " Computer");
+
+            // Show the result in the text area
+            resultTextArea.setText(result + "\n\nCurrent Score:\nYou: " + userScore + " | Computer: " + computerScore);
+        }
+    }
+
+    // Action listener for the reset button
+    private class ResetButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Reset the game scores
+            userScore = 0;
+            computerScore = 0;
+
+            // Reset the UI components
+            resultLabel.setText("Choose Rock, Paper, or Scissors");
+            userChoiceLabel.setText("Your choice: ");
+            computerChoiceLabel.setText("Computer's choice: ");
+            scoreLabel.setText("Score: You 0 - 0 Computer");
+            resultTextArea.setText("");
+        }
+    }
+
+    public static void main(String[] args) {
+        // Run the game in the Event Dispatch Thread
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                RockPaperScissorsGraphicsGUI game = new RockPaperScissorsGraphicsGUI();
+                game.setVisible(true);
+            }
+        });
+    }
+}
