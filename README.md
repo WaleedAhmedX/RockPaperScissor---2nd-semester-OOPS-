@@ -1,0 +1,1 @@
+This project was a part of my second semester where we were told to create a Java swing based project which encompasses the fundamentals of OOPs. Initially, this project was just an attempt at trying to make a project for the semester and its not the final project itself. This project was later swapped with Java swing based TicTacToe game.  
